@@ -17,6 +17,7 @@ class VoiceChatClient(QtWidgets.QWidget):
         self.client_socket = None
         self.audio_stream = pyaudio.PyAudio()
         self.is_streaming = False
+        self.is_muted = False
 
         self.setWindowTitle("Voice Chat Client")
 
@@ -33,6 +34,9 @@ class VoiceChatClient(QtWidgets.QWidget):
         self.send_button = QtWidgets.QPushButton("Send")
         self.send_button.setEnabled(False)
 
+        self.mute_button = QtWidgets.QPushButton("Mute")
+        self.mute_button.setVisible(False)
+
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self.connect_button)
         layout.addWidget(self.begin_voice_call_button)
@@ -41,6 +45,7 @@ class VoiceChatClient(QtWidgets.QWidget):
         layout.addWidget(self.status_label)
         layout.addWidget(self.text_edit)
         layout.addWidget(self.send_button)
+        layout.addWidget(self.mute_button)
         self.setLayout(layout)
 
         self.connect_button.clicked.connect(self.connect)
@@ -48,6 +53,7 @@ class VoiceChatClient(QtWidgets.QWidget):
         self.stop_voice_call_button.clicked.connect(self.stop_voice_call)
         self.disconnect_button.clicked.connect(self.disconnect)
         self.send_button.clicked.connect(self.send_text)
+        self.mute_button.clicked.connect(self.toggle_mute)
 
         self.set_styles()
 
@@ -107,12 +113,16 @@ class VoiceChatClient(QtWidgets.QWidget):
 
         self.begin_voice_call_button.setEnabled(False)
         self.stop_voice_call_button.setEnabled(True)
+        self.mute_button.setVisible(True)
 
     def stop_voice_call(self):
         self.is_streaming = False
 
         self.stop_voice_call_button.setEnabled(False)
         self.begin_voice_call_button.setEnabled(True)
+        self.mute_button.setVisible(False)
+        self.is_muted = False
+        self.mute_button.setText("Mute")
 
     def disconnect(self):
         if not self.client_socket:
@@ -142,13 +152,21 @@ class VoiceChatClient(QtWidgets.QWidget):
             self.text_socket.sendall(encoded_text)
             self.text_edit.clear()
 
+    def toggle_mute(self):
+        self.is_muted = not self.is_muted
+        if self.is_muted:
+            self.mute_button.setText("Unmute")
+        else:
+            self.mute_button.setText("Mute")
+
     def _send_audio(self):
         stream = self.audio_stream.open(format=FORMAT, channels=CHANNELS, rate=RATE, input=True, frames_per_buffer=CHUNK)
 
         while self.is_streaming:
             try:
                 data = stream.read(CHUNK)
-                self.client_socket.sendall(data)
+                if not self.is_muted:
+                    self.client_socket.sendall(data)
             except (OSError, BrokenPipeError):
                 break
 

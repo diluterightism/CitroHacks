@@ -19,7 +19,7 @@ RATE = 44100
 CHUNK = 1024
 
 # HOST HAS TO BE IN THE SAME NETWORK FOR NOW UNLESS THE VARIABLE IS REPLACED MANUALLY
-HOST = socket.gethostbyname(socket.gethostname()) # This makes it so that the ip address of whatever device is grabbed.
+HOST = 'localhost' # This makes it so that the ip address of whatever device is grabbed.
 PORT = 5000 # CHANGE THIS IF PORT 5000 IS TAKEN ON THE COMPUTER
 TEXT_PORT = 5001 # SAME GOES HERE
 

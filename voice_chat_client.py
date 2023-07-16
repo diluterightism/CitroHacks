@@ -18,7 +18,7 @@ RATE = 44100
 CHUNK = 1024
 
 # THE HOST HAS TO BE IN THE SAME NETWORK FOR NOW.
-HOST = socket.gethostbyname(socket.gethostname()) # Grabs the private IP address of the client. can be replaced with public IP address
+HOST = 'localhost' # Grabs the private IP address of the client. can be replaced with public IP address
 PORT = 5000 # CHANGE THIS IF PORT 5000 IS TAKEN ON YOUR COMPUTER
 TEXT_PORT = 5001 #SAME GOES HERE
 

@@ -1,17 +1,33 @@
+###########################
+#######FEYNMAN LEARN#######
+##THIS IS THE CLIENT FILE##
+##CURRENTLY WORKS LOCALLY##
+###########################
+
+# importing libraries
 import socket
 import threading
 import pyaudio
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+
+# const declaration (ports, ip addresses, et cetera)
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
 RATE = 44100
 CHUNK = 1024
-HOST = 'localhost'
-PORT = 5000
-TEXT_PORT = 5001
 
+# THE HOST HAS TO BE IN THE SAME NETWORK FOR NOW.
+HOST = socket.gethostbyname(socket.gethostname()) # Grabs the private IP address of the client. can be replaced with public IP address
+PORT = 5000 # CHANGE THIS IF PORT 5000 IS TAKEN ON YOUR COMPUTER
+TEXT_PORT = 5001 #SAME GOES HERE
+
+
+
+# class definition for server
 class VoiceChatClient(QtWidgets.QWidget):
+
+    # Initialising widgets for the gui as well as setting up the sockets
     def __init__(self):
         super().__init__()
         self.client_socket = None
@@ -57,6 +73,8 @@ class VoiceChatClient(QtWidgets.QWidget):
 
         self.set_styles()
 
+
+    # CSS code for gui styling 
     def set_styles(self):
         self.setStyleSheet("""
             QWidget {
@@ -86,6 +104,8 @@ class VoiceChatClient(QtWidgets.QWidget):
             }
         """)
 
+
+    # Sends request to server to connect 
     def connect(self):
         if self.client_socket:
             return
@@ -103,6 +123,7 @@ class VoiceChatClient(QtWidgets.QWidget):
         self.text_socket.connect((HOST, TEXT_PORT))
         threading.Thread(target=self._receive_text).start()
 
+    # Voice call button
     def begin_voice_call(self):
         if self.is_streaming:
             return
@@ -114,7 +135,9 @@ class VoiceChatClient(QtWidgets.QWidget):
         self.begin_voice_call_button.setEnabled(False)
         self.stop_voice_call_button.setEnabled(True)
         self.mute_button.setVisible(True)
+    
 
+    # Terminating voice call
     def stop_voice_call(self):
         self.is_streaming = False
 
@@ -196,6 +219,8 @@ class VoiceChatClient(QtWidgets.QWidget):
             except (OSError, ConnectionResetError):
                 break
 
+
+# Calling the functions and setting up QTwidgets
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])
     app.setStyle("Fusion")

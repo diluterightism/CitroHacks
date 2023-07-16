@@ -1,0 +1,289 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto Mono', monospace;
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  
+  /* Header Styles */
+  body {
+    font-family: 'IBM Plex Mono', 'Roboto Mono', monospace;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* HEADER */
+  .header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background-color: #222;
+  }
+  
+  .top-bar {
+    background-color: #1c1c1c;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 10px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.807);
+  }
+  
+  .bottom-bar {
+    background-color: #1c1c1c;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    color: #fff;
+  }
+  
+  .logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #fff;
+    font-weight: bold;
+    font-size: 20px;
+  }
+  
+  .logo__img {
+    height: 40px;
+    width: 40px;
+    margin-right: 10px;
+  }
+  
+  .nav {
+    display: flex;
+  }
+  
+  .nav__list {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+  }
+  
+  .nav__link {
+    text-decoration: none;
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+  }
+  
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 30px;
+    height: 20px;
+    cursor: pointer;
+  }
+  
+  .bar {
+    width: 100%;
+    height: 4px;
+    background-color: #fff;
+    transition: all 0.2s ease-in-out;
+  }
+  /* Hero Section Styles */
+  .hero {
+    background-color: #333;
+    color: #fff;
+    padding: 150px 0;
+    text-align: center;
+  }
+  
+  .hero__title {
+    font-size: 40px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .hero__description {
+    font-size: 20px;
+    margin-bottom: 40px;
+  }
+  
+  .btn{
+    display: inline-block;
+    padding: 10px 30px;
+    border-radius: 30px;
+    background-color: #ff6c0a;
+    color: #fff;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.2s ease-in-out;
+  }
+  /* About App Section Styles */
+  .about-app {
+    background-color: #f4f4f4;
+    padding: 80px 0;
+  }
+  
+  .about-app__title {
+    font-size: 32px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .about-app__description {
+    font-size: 20px;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  /* Features Section Styles */
+  .features {
+    background-color: #fff;
+    padding: 80px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 40px;
+  }
+  
+  .feature {
+    max-width: 400px;
+    text-align: center;
+  }
+  
+  .feature__icon {
+    font-size: 48px;
+    color: #ff6c0a;
+    margin-bottom: 20px;
+  }
+  
+  .feature__title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .feature__description {
+    font-size: 18px;
+  }
+  
+  /* How It Works Section Styles */
+  .how-it-works {
+    background-color: #f4f4f4;
+    padding: 80px 0;
+  }
+  
+  .how-it-works__title {
+    font-size: 32px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .how-it-works__steps {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0;
+    list-style-type: decimal;
+  }
+  
+  .how-it-works__step {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+  
+  /* Benefits Section Styles */
+  .benefits {
+    background-color: #fff;
+    padding: 80px 0;
+  }
+  
+  .benefits__title {
+    font-size: 32px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .benefits__list {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0;
+    list-style-type: disc;
+  }
+  
+  .benefits__item {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+  
+  /* Footer Styles */
+  .footer {
+    background-color: #222327;
+    color: rgba(255, 255, 255, 0.807);
+    padding: 20px 0;
+    text-align: center;
+  }
+  
+  .footer p {
+    margin: 0;
+  }
+  
+  /* Responsive Styles */
+  @media (max-width: 768px) {
+    .container {
+      padding: 0 10px;
+    }
+  
+    .logo {
+      font-size: 18px;
+    }
+  
+    .nav {
+      justify-content: center;
+    }
+  
+    .hero__title {
+      font-size: 32px;
+    }
+  
+    .hero__description {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+  
+    .feature__icon {
+      font-size: 36px;
+    }
+  
+    .feature__title {
+      font-size: 20px;
+    }
+  
+    .feature__description {
+      font-size: 16px;
+    }
+  
+    .how-it-works__title {
+      font-size: 24px;
+    }
+  
+    .how-it-works__step {
+      font-size: 16px;
+    }
+  
+    .benefits__title {
+      font-size: 24px;
+    }
+  
+    .benefits__item {
+      font-size: 16px;
+    }
+  }

@@ -1,42 +1,24 @@
-###########################
-#######FEYNMAN LEARN#######
-##THIS IS THE CLIENT FILE##
-##CURRENTLY WORKS LOCALLY##
-###########################
-
-# importing libraries
 import socket
 import threading
 import pyaudio
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-
-# const declaration (ports, ip addresses, et cetera)
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
 RATE = 44100
 CHUNK = 1024
+HOST = 'localhost'
+PORT = 5000
+TEXT_PORT = 5001
 
-# THE HOST HAS TO BE IN THE SAME NETWORK FOR NOW.
-HOST = 'localhost' # Grabs the private IP address of the client. can be replaced with public IP address
-PORT = 5000 # CHANGE THIS IF PORT 5000 IS TAKEN ON YOUR COMPUTER
-TEXT_PORT = 5001 #SAME GOES HERE
-
-
-
-# class definition for server
 class VoiceChatClient(QtWidgets.QWidget):
-
-    # Initialising widgets for the gui as well as setting up the sockets
     def __init__(self):
         super().__init__()
         self.client_socket = None
         self.audio_stream = pyaudio.PyAudio()
         self.is_streaming = False
         self.is_muted = False
-
         self.setWindowTitle("Voice Chat Client")
-
         self.connect_button = QtWidgets.QPushButton("Connect")
         self.begin_voice_call_button = QtWidgets.QPushButton("Begin Voice Call")
         self.begin_voice_call_button.setEnabled(False)
@@ -44,103 +26,97 @@ class VoiceChatClient(QtWidgets.QWidget):
         self.stop_voice_call_button.setEnabled(False)
         self.disconnect_button = QtWidgets.QPushButton("Disconnect")
         self.disconnect_button.setEnabled(False)
-
         self.status_label = QtWidgets.QLabel("Disconnected")
-        self.text_edit = QtWidgets.QTextEdit()
+        self.chat_area = QtWidgets.QTextEdit()
+        self.text_edit = QtWidgets.QLineEdit()
         self.send_button = QtWidgets.QPushButton("Send")
         self.send_button.setEnabled(False)
-
         self.mute_button = QtWidgets.QPushButton("Mute")
         self.mute_button.setVisible(False)
-
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self.connect_button)
         layout.addWidget(self.begin_voice_call_button)
         layout.addWidget(self.stop_voice_call_button)
         layout.addWidget(self.disconnect_button)
         layout.addWidget(self.status_label)
+        layout.addWidget(self.chat_area)
         layout.addWidget(self.text_edit)
         layout.addWidget(self.send_button)
         layout.addWidget(self.mute_button)
         self.setLayout(layout)
-
         self.connect_button.clicked.connect(self.connect)
         self.begin_voice_call_button.clicked.connect(self.begin_voice_call)
         self.stop_voice_call_button.clicked.connect(self.stop_voice_call)
         self.disconnect_button.clicked.connect(self.disconnect)
         self.send_button.clicked.connect(self.send_text)
         self.mute_button.clicked.connect(self.toggle_mute)
-
         self.set_styles()
 
-
-    # CSS code for gui styling 
     def set_styles(self):
         self.setStyleSheet("""
             QWidget {
-                background-color: #0E1822;
+                background-color: #1A1E34;
+                color: #F5F5F5;
             }
             QPushButton {
-                background-color: #1F2B38;
+                background-color: #282D46;
                 border-style: none;
                 color: #F5F5F5;
                 font: bold 12px;
                 padding: 8px;
-                min-width: 150px;
+                min-width: 100px;
             }
             QPushButton:hover {
-                background-color: #2F3B48;
+                background-color: #383F60;
             }
             QLabel {
-                color: #F5F5F5;
                 font: bold 14px;
             }
+            QLineEdit {
+                background-color: #282D46;
+                border-style: none;
+                color: #F5F5F5;
+                font: 12px;
+                padding: 8px;
+            }
             QTextEdit {
-                background-color: #1F2B38;
+                background-color: #282D46;
                 border-style: none;
                 color: #F5F5F5;
                 font: 12px;
                 padding: 8px;
             }
         """)
+        self.chat_area.setReadOnly(True)
+        self.chat_area.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
+        self.chat_area.setAlignment(QtCore.Qt.AlignRight)  # Align sender's messages to the right
 
-
-    # Sends request to server to connect 
     def connect(self):
         if self.client_socket:
             return
-
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_socket.connect((HOST, PORT))
-
         self.status_label.setText("Connected")
         self.connect_button.setEnabled(False)
         self.begin_voice_call_button.setEnabled(True)
         self.disconnect_button.setEnabled(True)
         self.send_button.setEnabled(True)
-
         self.text_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.text_socket.connect((HOST, TEXT_PORT))
         threading.Thread(target=self._receive_text).start()
 
-    # Voice call button
     def begin_voice_call(self):
         if self.is_streaming:
             return
-
         self.is_streaming = True
         threading.Thread(target=self._send_audio).start()
         threading.Thread(target=self._receive_audio).start()
-
         self.begin_voice_call_button.setEnabled(False)
         self.stop_voice_call_button.setEnabled(True)
         self.mute_button.setVisible(True)
-    
 
-    # Terminating voice call
     def stop_voice_call(self):
         self.is_streaming = False
-
         self.stop_voice_call_button.setEnabled(False)
         self.begin_voice_call_button.setEnabled(True)
         self.mute_button.setVisible(False)
@@ -150,29 +126,27 @@ class VoiceChatClient(QtWidgets.QWidget):
     def disconnect(self):
         if not self.client_socket:
             return
-
         self.is_streaming = False
         self.client_socket.shutdown(socket.SHUT_RDWR)
         self.client_socket.close()
         self.client_socket = None
         self.audio_stream.terminate()
-
         self.status_label.setText("Disconnected")
         self.connect_button.setEnabled(True)
         self.begin_voice_call_button.setEnabled(False)
         self.stop_voice_call_button.setEnabled(False)
         self.disconnect_button.setEnabled(False)
         self.send_button.setEnabled(False)
-
         self.text_socket.shutdown(socket.SHUT_RDWR)
         self.text_socket.close()
         self.text_socket = None
 
     def send_text(self):
-        text = self.text_edit.toPlainText().strip()
+        text = self.text_edit.text().strip()
         if text:
             encoded_text = text.encode()
             self.text_socket.sendall(encoded_text)
+            self.add_message_to_chat("<b style='color: #409EFF;'>You: </b>" + text)
             self.text_edit.clear()
 
     def toggle_mute(self):
@@ -182,9 +156,15 @@ class VoiceChatClient(QtWidgets.QWidget):
         else:
             self.mute_button.setText("Mute")
 
+    def add_message_to_chat(self, message):
+        cursor = self.chat_area.textCursor()
+        cursor.movePosition(QtGui.QTextCursor.End)
+        cursor.insertHtml(message + "<br>")
+        self.chat_area.setTextCursor(cursor)
+        self.chat_area.ensureCursorVisible()
+
     def _send_audio(self):
         stream = self.audio_stream.open(format=FORMAT, channels=CHANNELS, rate=RATE, input=True, frames_per_buffer=CHUNK)
-
         while self.is_streaming:
             try:
                 data = stream.read(CHUNK)
@@ -192,20 +172,17 @@ class VoiceChatClient(QtWidgets.QWidget):
                     self.client_socket.sendall(data)
             except (OSError, BrokenPipeError):
                 break
-
         stream.stop_stream()
         stream.close()
 
     def _receive_audio(self):
         stream = self.audio_stream.open(format=FORMAT, channels=CHANNELS, rate=RATE, output=True, frames_per_buffer=CHUNK)
-
         while self.is_streaming:
             try:
                 data = self.client_socket.recv(CHUNK)
                 stream.write(data)
             except (OSError, ConnectionResetError):
                 break
-
         stream.stop_stream()
         stream.close()
 
@@ -215,22 +192,13 @@ class VoiceChatClient(QtWidgets.QWidget):
                 data = self.text_socket.recv(1024)
                 if not data:
                     break
-                self.text_edit.append(data.decode())
+                self.add_message_to_chat("<b style='color: #67C23A;'>Server: </b>" + data.decode())
             except (OSError, ConnectionResetError):
                 break
 
-
-# Calling the functions and setting up QTwidgets
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])
     app.setStyle("Fusion")
-    palette = QtGui.QPalette()
-    palette.setColor(QtGui.QPalette.Window, QtGui.QColor("#0E1822"))
-    palette.setColor(QtGui.QPalette.Button, QtGui.QColor("#1F2B38"))
-    palette.setColor(QtGui.QPalette.ButtonText, QtGui.QColor("#F5F5F5"))
-    palette.setColor(QtGui.QPalette.Text, QtGui.QColor("#F5F5F5"))
-    app.setPalette(palette)
-
     client = VoiceChatClient()
     client.show()
     app.exec_()

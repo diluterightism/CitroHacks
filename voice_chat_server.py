@@ -27,14 +27,19 @@ class VoiceChatServer(QtWidgets.QWidget):
         self.stop_button = QtWidgets.QPushButton("Stop Server")
         self.stop_button.setEnabled(False)
         self.status_label = QtWidgets.QLabel("Server stopped")
-        self.text_list = QtWidgets.QListWidget()
-        self.text_edit = QtWidgets.QLineEdit()
+        self.chat_area = QtWidgets.QTextEdit()
+        font = QtGui.QFont("Arial", 14)  # Set font and size here
+        self.chat_area.setFont(font)  # Apply the font to the QTextEdit widget
+        self.text_edit = QtWidgets.QTextEdit()
+        font = QtGui.QFont("Arial", 14)  # Set font and size here
+        self.text_edit.setFont(font)  # Apply the font to the QTextEdit widget
+        self.text_edit.setMaximumHeight(100)  # Set maximum height for the text_edit widget
         self.send_button = QtWidgets.QPushButton("Send")
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self.start_button)
         layout.addWidget(self.stop_button)
         layout.addWidget(self.status_label)
-        layout.addWidget(self.text_list)
+        layout.addWidget(self.chat_area)
         layout.addWidget(self.text_edit)
         layout.addWidget(self.send_button)
         self.setLayout(layout)
@@ -63,14 +68,7 @@ class VoiceChatServer(QtWidgets.QWidget):
             QLabel {
                 font: bold 14px;
             }
-            QLineEdit {
-                background-color: #282D46;
-                border-style: none;
-                color: #F5F5F5;
-                font: 12px;
-                padding: 8px;
-            }
-            QListWidget {
+            QTextEdit {
                 background-color: #282D46;
                 border-style: none;
                 color: #F5F5F5;
@@ -78,6 +76,9 @@ class VoiceChatServer(QtWidgets.QWidget):
                 padding: 8px;
             }
         """)
+        self.chat_area.setReadOnly(True)
+        self.chat_area.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
+        self.chat_area.setAlignment(QtCore.Qt.AlignRight)  # Align server's messages to the right
 
     def start(self):
         self.server_socket.bind((HOST, PORT))
@@ -112,15 +113,6 @@ class VoiceChatServer(QtWidgets.QWidget):
         self.start_button.setEnabled(True)
         self.stop_button.setEnabled(False)
         self.status_label.setText("Server stopped")
-
-    def send_text(self):
-        text = self.text_edit.text().strip()
-        if text:
-            encoded_text = text.encode()
-            for conn in self.text_connections:
-                conn.sendall(encoded_text)
-            self.text_list.addItem("Server: " + text)
-            self.text_edit.clear()
 
     def _accept_connections(self):
         while True:
@@ -169,13 +161,25 @@ class VoiceChatServer(QtWidgets.QWidget):
                 data = text_socket.recv(1024)
                 if not data:
                     break
-                self.text_list.addItem("Client: " + data.decode())
+                for conn in self.text_connections:
+                    if conn != text_socket:
+                        conn.sendall(data)
+                self.chat_area.append("<b style='color: #409EFF;'>Client: </b>" + data.decode())
             except Exception as e:
                 print(e)
                 break
         text_socket.close()
         self.text_connections.remove(text_socket)
         self.text_threads.remove(threading.current_thread())
+
+    def send_text(self):
+        text = self.text_edit.toPlainText().strip()
+        if text:
+            encoded_text = text.encode()
+            for conn in self.text_connections:
+                conn.sendall(encoded_text)
+                self.chat_area.append("<b style='color: #67C23A;'>Server: </b>" + text)
+            self.text_edit.clear()
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])

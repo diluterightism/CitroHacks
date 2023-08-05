@@ -28,7 +28,11 @@ class VoiceChatClient(QtWidgets.QWidget):
         self.disconnect_button.setEnabled(False)
         self.status_label = QtWidgets.QLabel("Disconnected")
         self.chat_area = QtWidgets.QTextEdit()
+        font = QtGui.QFont("Arial", 14)  # Set font and size here
+        self.chat_area.setFont(font)  # Apply the font to the QTextEdit widget
         self.text_edit = QtWidgets.QLineEdit()
+        font = QtGui.QFont("Arial", 14)  # Set font and size here
+        self.text_edit.setFont(font)  # Apply the font to the QTextEdit widget
         self.send_button = QtWidgets.QPushButton("Send")
         self.send_button.setEnabled(False)
         self.mute_button = QtWidgets.QPushButton("Mute")

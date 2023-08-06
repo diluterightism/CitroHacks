@@ -28,10 +28,10 @@ class VoiceChatServer(QtWidgets.QWidget):
         self.stop_button.setEnabled(False)
         self.status_label = QtWidgets.QLabel("Server stopped")
         self.chat_area = QtWidgets.QTextEdit()
-        font = QtGui.QFont("Arial", 14)  # Set font and size here
+        font = QtGui.QFont("Arial", 40, 30)  # Set font and size here
         self.chat_area.setFont(font)  # Apply the font to the QTextEdit widget
         self.text_edit = QtWidgets.QTextEdit()
-        font = QtGui.QFont("Arial", 14)  # Set font and size here
+        font = QtGui.QFont("Arial", 40, 30)  # Set font and size here
         self.text_edit.setFont(font)  # Apply the font to the QTextEdit widget
         self.text_edit.setMaximumHeight(100)  # Set maximum height for the text_edit widget
         self.send_button = QtWidgets.QPushButton("Send")
@@ -58,27 +58,27 @@ class VoiceChatServer(QtWidgets.QWidget):
                 background-color: #282D46;
                 border-style: none;
                 color: #F5F5F5;
-                font: bold 12px;
-                padding: 8px;
-                min-width: 100px;
+                font: bold 14px; /* Updated font size */
+                padding: 10px; /* Updated padding */
+                min-width: 120px; /* Updated minimum width */
             }
             QPushButton:hover {
                 background-color: #383F60;
             }
             QLabel {
-                font: bold 14px;
+                font: bold 16px; /* Updated font size */
             }
             QTextEdit {
                 background-color: #282D46;
                 border-style: none;
                 color: #F5F5F5;
-                font: 12px;
-                padding: 8px;
+                font: 20px; /* Updated font size */
+                padding: 10px; /* Updated padding */
             }
         """)
         self.chat_area.setReadOnly(True)
         self.chat_area.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
-        self.chat_area.setAlignment(QtCore.Qt.AlignRight)  # Align server's messages to the right
+        self.chat_area.setAlignment(QtCore.Qt.AlignRight)
 
     def start(self):
         self.server_socket.bind((HOST, PORT))

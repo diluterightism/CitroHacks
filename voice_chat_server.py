@@ -22,11 +22,11 @@ class VoiceChatServer(QtWidgets.QWidget):
         self.streams = []
         self.text_connections = []
         self.text_threads = []
-        self.setWindowTitle("Voice Chat Server")
-        self.start_button = QtWidgets.QPushButton("Start Server")
-        self.stop_button = QtWidgets.QPushButton("Stop Server")
+        self.setWindowTitle("FeynPrep")
+        self.start_button = QtWidgets.QPushButton("Start Connecting")
+        self.stop_button = QtWidgets.QPushButton("End Connection")
         self.stop_button.setEnabled(False)
-        self.status_label = QtWidgets.QLabel("Server stopped")
+        self.status_label = QtWidgets.QLabel("Disconnected")
         self.chat_area = QtWidgets.QTextEdit()
         font = QtGui.QFont("Arial", 40, 30)  # Set font and size here
         self.chat_area.setFont(font)  # Apply the font to the QTextEdit widget
@@ -87,7 +87,7 @@ class VoiceChatServer(QtWidgets.QWidget):
         self.text_socket.listen(2)
         self.start_button.setEnabled(False)
         self.stop_button.setEnabled(True)
-        self.status_label.setText("Server started. Listening for connections...")
+        self.status_label.setText("Connection enabled")
         threading.Thread(target=self._accept_connections).start()
         threading.Thread(target=self._accept_text_connections).start()
 
@@ -112,12 +112,12 @@ class VoiceChatServer(QtWidgets.QWidget):
         self.text_threads.clear()
         self.start_button.setEnabled(True)
         self.stop_button.setEnabled(False)
-        self.status_label.setText("Server stopped")
+        self.status_label.setText("Disconnected")
 
     def _accept_connections(self):
         while True:
             client_socket, address = self.server_socket.accept()
-            print(f"Client connected: {address}")
+            print(f"Student 1 connected: {address}")
             self.client_connections.append(client_socket)
             client_thread = threading.Thread(target=self._handle_client, args=(client_socket,))
             self.client_threads.append(client_thread)
@@ -127,7 +127,7 @@ class VoiceChatServer(QtWidgets.QWidget):
     def _accept_text_connections(self):
         while True:
             text_socket, address = self.text_socket.accept()
-            print(f"Text client connected: {address}")
+            print(f"Student 1 connected: {address}")
             self.text_connections.append(text_socket)
             text_thread = threading.Thread(target=self._handle_text_client, args=(text_socket,))
             self.text_threads.append(text_thread)
@@ -164,7 +164,7 @@ class VoiceChatServer(QtWidgets.QWidget):
                 for conn in self.text_connections:
                     if conn != text_socket:
                         conn.sendall(data)
-                self.chat_area.append("<b style='color: #409EFF;'>Client: </b>" + data.decode())
+                self.chat_area.append("<b style='color: #409EFF;'>Student 1: </b>" + data.decode())
             except Exception as e:
                 print(e)
                 break
@@ -178,12 +178,12 @@ class VoiceChatServer(QtWidgets.QWidget):
             encoded_text = text.encode()
             for conn in self.text_connections:
                 conn.sendall(encoded_text)
-                self.chat_area.append("<b style='color: #67C23A;'>Server: </b>" + text)
+                self.chat_area.append("<b style='color: #67C23A;'>Student 2: </b>" + text)
             self.text_edit.clear()
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])
     app.setStyle("Fusion")
     server = VoiceChatServer()
-    server.show()
+    server.showMaximized()
     app.exec_()
